@@ -1,6 +1,6 @@
 {
   "name": "mario-maker",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An API for the Super Mario Maker Bookmark website",
   "main": "mario-maker.js",
   "scripts": {

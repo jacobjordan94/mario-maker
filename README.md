@@ -8,8 +8,7 @@ npm install mario-maker
 
 ## Setup 
 ```javascript
-var MarioMaker = require('mario-maker')
-var mm = new MarioMaker();
+var mm = require('mario-maker');
 ```
 
 ## Methods 

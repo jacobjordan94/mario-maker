@@ -1,8 +1,8 @@
 {
   "name": "mario-maker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An API for the Super Mario Maker Bookmark website",
-  "main": "index.js",
+  "main": "mario-maker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -29,5 +29,6 @@
     "request": "latest",
     "cheerio": "latest"
   },
-  "homepage": "https://github.com/jacobjordan94/mario-maker#readme"
+  "homepage": "https://github.com/jacobjordan94/mario-maker#readme",
+  "tonicExampleFilename": "tonic.js"
 }

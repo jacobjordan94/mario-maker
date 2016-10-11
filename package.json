@@ -1,6 +1,6 @@
 {
   "name": "mario-maker",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "An API for the Super Mario Maker Bookmark website",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,10 @@
   "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/jacobjordan94/mario-maker/issues"
+  },
+  "dependencies": {
+    "request": "latest",
+    "cheerio": "latest"
   },
   "homepage": "https://github.com/jacobjordan94/mario-maker#readme"
 }

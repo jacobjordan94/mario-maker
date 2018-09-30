@@ -1,21 +1,21 @@
 //            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 //                    Version 2, December 2004
-
+//
 // Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
-
+//
 // Everyone is permitted to copy and distribute verbatim or modified
 // copies of this license document, and changing it is allowed as long
 // as the name is changed.
-
+//
 //            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 //   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
+//
 //  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 
 /*
  * by Jacob Jordan (@JacobAJordan_)
- * jacobjordan94@live.com 
+ * jacobjordan94@live.com
  */
 
 var request = require('request');
@@ -64,9 +64,9 @@ class MarioMaker{
 			cls = cls.replace('typography typography-', '');
 			typ[i] = cls;
 		});
-		json.stars = Number(typ.join('')); 
+		json.stars = Number(typ.join(''));
 
-		//Unique users 
+		//Unique users
 		typ = [];
 		$('.played-count > .typography').each((i, el) => {
 			var cls = $(el).attr('class');
@@ -75,7 +75,7 @@ class MarioMaker{
 		});
 		json.unique_users = Number(typ.join(''));
 
-		//number of shares 
+		//number of shares
 		typ = [];
 		$('.shared-count > .typography').each((i, el) => {
 			var cls = $(el).attr('class');
@@ -95,7 +95,7 @@ class MarioMaker{
 		json.attempts = Number(x.split('slash')[1]);
 
 		//tag
-		var tag = $('.course-meta-info > .course-tag').html(); 
+		var tag = $('.course-meta-info > .course-tag').html();
 		tag = tag == '---' ? null : tag;
 		json.tag = tag;
 
@@ -109,26 +109,26 @@ class MarioMaker{
 			cls = cls.replace('typography typography-', '');
 			cls = cls.replace('minute', ':');
 			cls = cls.replace('second', '.');
-			typ[i] = cls; 
-		}); 
+			typ[i] = cls;
+		});
 		var wr_time = typ.join('');
 		var wr_url = $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link').attr('href');
 		wr_url = this._profileURL + wr_url;
 		var wr_img_url = $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link > img').attr('src');
 		json.world_record.name = wr_name;
-		json.world_record.time = wr_time; 
+		json.world_record.time = wr_time;
 		json.world_record.user_url = wr_url;
 		json.world_record.user_img_url = wr_img_url;
 		if(json.world_record.name === ''){
 			json.world_record = null;
 		}
 
-		//first clear 
+		//first clear
 		json.first_clear = {};
 		var fc_name = $('.first-user > .body > .user-wrapper > .user-info > .name').html();
 		var fc_img_url = $('.first-user > .body > .user-wrapper > .mii-wrapper > .link > img').attr('src');
 		var fc_url = $('.first-user > .body > .user-wrapper > .mii-wrapper > .link').attr('href');
-		fc_url = this._profileURL + fc_url; 
+		fc_url = this._profileURL + fc_url;
 		json.first_clear.name = fc_name;
 		json.first_clear.user_url = fc_url;
 		json.first_clear.user_img_url = fc_img_url;
@@ -136,7 +136,7 @@ class MarioMaker{
 			json.first_clear = null;
 		}
 
-		//recent players 
+		//recent players
 		$('.played-body > ul > li').each((i, el) => {
 			var obj = {};
 			var _$ = cheerio.load(el, {decodeEntities: false});
@@ -152,7 +152,7 @@ class MarioMaker{
 		}
 
 		//cleared by
-		users = []; 
+		users = [];
 		$('.cleared-body > ul > li').each((i, el) => {
 			var obj = {};
 			var _$ = cheerio.load(el, {decodeEntities: false});
@@ -168,7 +168,7 @@ class MarioMaker{
 		}
 
 		//starred by
-		users = []; 
+		users = [];
 		$('.liked-body > ul > li').each((i, el) => {
 			var obj = {};
 			var _$ = cheerio.load(el, {decodeEntities: false});
@@ -195,8 +195,8 @@ class MarioMaker{
 			if(!error && response.statusCode == 200){
 				var json = this._buildJSON(body);
 				callback(error, response, json);
-			} else {	
-				callback(error, response, json); 
+			} else {
+				callback(error, response, json);
 			}
 		});
 	}

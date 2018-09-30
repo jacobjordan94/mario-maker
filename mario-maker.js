@@ -18,13 +18,11 @@
  * jacobjordan94@live.com 
  */
 
-
 var request = require('request');
 var cheerio = require('cheerio');
 
 class MarioMaker{
 	constructor(){
-		this._baseURL = 'https://supermariomakerbookmark.nintendo.net/courses/';
 		this._profileURL = 'https://supermariomakerbookmark.nintendo.net';
 	}
 
@@ -35,8 +33,7 @@ class MarioMaker{
 		var users = [];
 		var self = this;
 
-		//Difficulty
-		json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase();
+		json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase(); // Difficulty
 
 		//Clear Rate
 		$('.clear-rate > .typography').each((i, el) => {
@@ -49,17 +46,10 @@ class MarioMaker{
 		typ.pop();
 		json.clear_rate = Number(typ.join(''));
 
-		//Course Title 
-		json.course_title = $('.course-title').html();
-
-		//course image
-		json.course_img = $('.course-image > .course-image').attr('src');
-
-		//course image full
-		json.course_img_full = $('.course-image-full').attr('src');
-
-		//Created at
-		json.created_at = $('.created_at').html();
+		json.course_title = $('.course-title').html(); // Course Title
+		json.course_img = $('.course-image > .course-image').attr('src'); // course image
+		json.course_img_full = $('.course-image-full').attr('src'); // course image full
+		json.created_at = $('.created_at').html(); // Created at
 
 		//user
 		json.creator_name = $('.creator-info > .name').html();
@@ -101,13 +91,8 @@ class MarioMaker{
 			typ[i] = cls;
 		});
 		var x = typ.join('');
-		var clears = x.split('slash')[0];
-		var attempts = x.split('slash')[1];
-		json.clears = Number(clears);
-		json.attempts = Number(attempts);
-
-		//miiverse
-		json.miiverse_url = $('.button.miiverse.link').attr('href');
+		json.clears = Number(x.split('slash')[0]);
+		json.attempts = Number(x.split('slash')[1]);
 
 		//tag
 		var tag = $('.course-meta-info > .course-tag').html(); 
@@ -206,11 +191,9 @@ class MarioMaker{
 	}
 
 	getCourse(id, callback){
-		var courseURL = this._baseURL + id;
-		var self = this;
-		request(courseURL, function(error, response, body){
+		request(this._profileURL + '/courses/' + id, function(error, response, body){
 			if(!error && response.statusCode == 200){
-				var json = self._buildJSON(body);
+				var json = this._buildJSON(body);
 				callback(error, response, json);
 			} else {	
 				callback(error, response, json); 

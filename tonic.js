@@ -1,10 +1,14 @@
-// Change Node version to Node6
-var mm = require('mario-maker');
+var mm = require('./mario-maker.js');
 
-mm.getCourse('6773-0000-024C-BFBF', function(error, response, json){
-	if(!error && response.statusCode == 200){
+mm.getCourse('370D-0000-0253-A432', function(error, json) { // blatantly advertising
+	if(!error && json.response.statusCode == 200){
 		console.dir(json);
 	} else {
-		console.log(response.statusCode);
+		console.log(json);
 	}
 });
+
+(async () => {
+	var json = await mm.getCourseP('370D-0000-0253-A432')
+	console.dir(json)
+})()

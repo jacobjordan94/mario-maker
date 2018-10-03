@@ -1,9 +1,9 @@
 # mario-maker.js
 API for the Super Mario Maker Bookmark website (or, at least, my take on it XD)
 ---
-## Installation (requires Node v8 or higher (PROMISES))
-```
-npm install mario-maker
+## Installation (requires Node v8 or higher)
+```bash
+npm install super-maker-api
 ```
 
 ## Setup

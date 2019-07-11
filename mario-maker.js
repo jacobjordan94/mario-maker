@@ -18,10 +18,13 @@
  * jacobjordan94@live.com
  */
 
-var request = require('request');
-var cheerio = require('cheerio');
+const request = require('request');
+const cheerio = require('cheerio');
 
-var profileURL = 'https://supermariomakerbookmark.nintendo.net';
+const { promisify } = require("util");
+const promiseRequest = promisify(request);
+
+const bookmarkURL = 'https://supermariomakerbookmark.nintendo.net';
 
 function makeJSON(body) {
 	var $ = cheerio.load(body, {decodeEntities: false});
@@ -204,23 +207,19 @@ function makeJSON(body) {
 	return json;
 }
 
-function getCourse(id, callback){
-	request(profileURL + '/courses/' + id, function(error, response, body) {
-		if(!error && response.statusCode == 200){
-			let json = makeJSON(body)
-			json.response = response
-			callback(error, json)
-		} else {
-			callback(error, response)
-		}
-	});
+module.exports = (id, callback=null) => {
+	if (callback) {
+		request({url: bookmarkURL + '/courses/' + id, json: true}, function(error, response, body) {
+			if(!error && response.statusCode == 200) {
+				json.response = response
+				callback(error, json)
+			} else {
+				callback(error, response)
+			}
+		});
+	} else {
+		let { body, statusCode, responce } = promiseRequest({url: bookmarkURL + '/courses/' + id, json: true});
+		if (!responce || statusCode !== 200) return 'Invalid response code';
+		return body;
+	}
 }
-
-function getCourseP(id) {
-	return require("util").promisify(getCourse)(id)
-}
-
-module.exports = {
-	getCourse,
-	getCourseP
-};

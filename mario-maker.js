@@ -209,8 +209,9 @@ function makeJSON(body) {
 
 module.exports = (id, callback=null) => {
 	if (callback) {
-		request({url: bookmarkURL + '/courses/' + id, json: true}, function(error, response, body) {
+		request(bookmarkURL + '/courses/' + id, function(error, response, body) {
 			if(!error && response.statusCode == 200) {
+				let json = makeJSON(body)
 				json.response = response
 				callback(error, json)
 			} else {
@@ -218,8 +219,11 @@ module.exports = (id, callback=null) => {
 			}
 		});
 	} else {
-		let { body, statusCode, responce } = promiseRequest({url: bookmarkURL + '/courses/' + id, json: true});
+		let { body, statusCode, responce } = promiseRequest(bookmarkURL + '/courses/' + id);
 		if (!responce || statusCode !== 200) return 'Invalid response code';
-		return body;
+
+		let json = makeJSON(body)
+		json.response = response
+		return json;
 	}
 }

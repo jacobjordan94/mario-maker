@@ -142,5 +142,5 @@ The value returned will be the course data inside a JSON object. For example, he
 
 ## Credits
 
-**Samplasion** - Developer of the Super Mario Maker Bookmark Website API
-**NightYoshi370** - Making callbacks optional, creating this ReadME
+- **Samplasion** - Developer of the Super Mario Maker Bookmark Website API
+- **NightYoshi370** - Making callbacks optional, creating this ReadME

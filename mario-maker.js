@@ -18,10 +18,13 @@
  * jacobjordan94@live.com
  */
 
-var request = require('request');
-var cheerio = require('cheerio');
+const request = require('request');
+const cheerio = require('cheerio');
 
-var profileURL = 'https://supermariomakerbookmark.nintendo.net';
+const { promisify } = require("util");
+const promiseRequest = promisify(request);
+
+const bookmarkURL = 'https://supermariomakerbookmark.nintendo.net';
 
 function makeJSON(body) {
 	var $ = cheerio.load(body, {decodeEntities: false});
@@ -30,7 +33,10 @@ function makeJSON(body) {
 	var users = [];
 	// var self = this;
 
-	json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase(); // Difficulty
+	if ($('.rank.nonprize') && $('.rank.nonprize')['0'] && $('.rank.nonprize')['0'].next && $('.rank.nonprize')['0'].next.data)
+		json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase();
+	else
+		json.difficulty = null;
 
 	//Clear Rate
 	$('.clear-rate > .typography').each((i, el) => {
@@ -204,23 +210,23 @@ function makeJSON(body) {
 	return json;
 }
 
-function getCourse(id, callback){
-	request(profileURL + '/courses/' + id, function(error, response, body) {
-		if(!error && response.statusCode == 200){
-			let json = makeJSON(body)
-			json.response = response
-			callback(error, json)
-		} else {
-			callback(error, response)
-		}
-	});
-}
+module.exports = (id, callback=null) => {
+	if (callback) {
+		request(bookmarkURL + '/courses/' + id, function(error, response, body) {
+			if(!error && response.statusCode == 200) {
+				let json = makeJSON(body)
+				json.response = response
+				callback(error, json)
+			} else {
+				callback(error, response)
+			}
+		});
+	} else {
+		let { body, statusCode, responce } = promiseRequest(bookmarkURL + '/courses/' + id);
+		if (!responce || statusCode !== 200) return 'Invalid response code';
 
-function getCourseP(id) {
-	return require("util").promisify(getCourse)(id)
+		let json = makeJSON(body)
+		json.response = response
+		return json;
+	}
 }
-
-module.exports = {
-	getCourse,
-	getCourseP
-};

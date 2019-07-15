@@ -33,7 +33,10 @@ function makeJSON(body) {
 	var users = [];
 	// var self = this;
 
-	json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase(); // Difficulty
+	if ($('.rank.nonprize') && $('.rank.nonprize')['0'] && $('.rank.nonprize')['0'].next && $('.rank.nonprize')['0'].next.data)
+		json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase();
+	else
+		json.difficulty = null;
 
 	//Clear Rate
 	$('.clear-rate > .typography').each((i, el) => {

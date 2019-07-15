@@ -37,7 +37,7 @@ smmAPI('370D-0000-0253-A432', function(error, course) {
 ### Return value
 The value returned will be the course data inside a JSON object. For example, here is the information for `Castello aereo Infernale α/Ω` made by Samplasion (if you'd like to give it a try, the course ID is **370D-0000-0253-A432**)
 
-```json
+```js
 { difficulty: 'expert',
   clear_rate: 4.16,
   course_title: 'Castello aereo Infernale α/Ω',

@@ -26,11 +26,25 @@ const promiseRequest = promisify(request);
 
 const bookmarkURL = 'https://supermariomakerbookmark.nintendo.net';
 
+function createUserElement(object) {
+	let userList = [];
+	let userObject = {};
+
+	object.each((i, el) => {
+		userObject = {};
+		var _$ = cheerio.load(el, {decodeEntities: false});
+		userObject.name = _$('.user-wrapper > .user-info > .name').html();
+		userObject.url = bookmarkURL + _$('.user-wrapper > .mii-wrapper > .link').attr('href');
+		userObject.avatar = _$('.user-wrapper > .mii-wrapper > .link > img').attr('src');
+		userList[i] = userObject;
+	});
+
+	return (userList.length ? userList : null);
+}
+
 function makeJSON(body) {
-	var $ = cheerio.load(body, {decodeEntities: false});
-	var json = {};
-	var typ = [];
-	var users = [];
+	let $ = cheerio.load(body, {decodeEntities: false});
+	let json = {};
 	// var self = this;
 
 	if ($('.rank.nonprize') && $('.rank.nonprize')['0'] && $('.rank.nonprize')['0'].next && $('.rank.nonprize')['0'].next.data)
@@ -39,6 +53,7 @@ function makeJSON(body) {
 		json.difficulty = null;
 
 	//Clear Rate
+	let typ = [];
 	$('.clear-rate > .typography').each((i, el) => {
 		var cls = $(el).attr('class');
 		cls = cls.replace('typography typography-', '');
@@ -49,37 +64,24 @@ function makeJSON(body) {
 	typ.pop();
 	json.clear_rate = Number(typ.join(''));
 
-	json.course_title = $('.course-title').html(); // Course Title
-	json.course_img = $('.course-image > .course-image').attr('src'); // course image
-	json.course_img_full = $('.course-image-full').attr('src'); // course image full
+	json.title = $('.course-title').html(); // Course Title
 	json.created_at = $('.created_at').html(); // Created at
-
-	//user
-	json.creator_name = $('.creator-info > .name').html();
-	json.creator_url = profileURL + $('.mii-wrapper.creator > .link').attr('href');
-	json.creator_img_url = $('.mii-wrapper.creator > .link > img').attr('src');
-
-	var getGS = (gs) => {
-		switch (gs) {
-			case "sb":
-				return "Super Mario Bros."
-			case "sb3":
-				return "Super Mario Bros. 3"
-			case "sw":
-				return "Super Mario World"
-			case "sbu":
-				return "New Super Mario Bros. U"
-		}
+	json.images = {
+		thumbnail: $('.course-image > .course-image').attr('src'),
+		fullview: $('.course-image-full').attr('src')
 	}
+
+	// Creator
+	json.creator = {
+		name: $('.creator-info > .name').html(),
+		url: bookmarkURL + $('.mii-wrapper.creator > .link').attr('href'),
+		avatar: $('.mii-wrapper.creator > .link > img').attr('src')
+	}
+
 	// Game style
-	var gs = ""
-	var gsr = ""
 	$('.gameskin.bg-image').each((i, el) => {
-		gsr = el.attribs.class.replace('gameskin bg-image common_gs_', '')
-		gs = getGS(gsr)
+		json.gameStyle = el.attribs.class.replace('gameskin bg-image common_gs_', '')
 	})
-	json.game_style_raw = gsr
-	json.game_style = gs;
 
 	//Stars
 	typ = [];
@@ -124,10 +126,9 @@ function makeJSON(body) {
 	json.tag = tag;
 
 	//world record
-	json.world_record = {};
+	json.world_record = null;
 	typ = [];
 
-	var wr_name = $('.fastest-time-wrapper > .user-wrapper > .user-info > .name').html();
 	$('.fastest-time-wrapper > .clear-time > .typography').each((i, el) =>{
 		var cls = $(el).attr('class');
 		cls = cls.replace('typography typography-', '');
@@ -135,77 +136,32 @@ function makeJSON(body) {
 		cls = cls.replace('second', '.');
 		typ[i] = cls;
 	});
-	var wr_time = typ.join('');
-	var wr_url = $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link').attr('href');
-	wr_url = profileURL + wr_url;
-	var wr_img_url = $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link > img').attr('src');
-	json.world_record.name = wr_name;
-	json.world_record.time = wr_time;
-	json.world_record.user_url = wr_url;
-	json.world_record.user_img_url = wr_img_url;
-	if(json.world_record.name === ''){
-		json.world_record = null;
-	}
+
+	let worldRecord = $('.fastest-time-wrapper > .user-wrapper > .user-info > .name').html()
+	if (worldRecord)
+		json.world_record = {
+			time: typ.join(''),
+			user: {
+				name: worldRecord,
+				url: bookmarkURL + $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link').attr('href'),
+				avatar: $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link > img').attr('src')
+			}
+		}
 
 	//first clear
-	json.first_clear = {};
-	var fc_name = $('.first-user > .body > .user-wrapper > .user-info > .name').html();
-	var fc_img_url = $('.first-user > .body > .user-wrapper > .mii-wrapper > .link > img').attr('src');
-	var fc_url = $('.first-user > .body > .user-wrapper > .mii-wrapper > .link').attr('href');
-	fc_url = profileURL + fc_url;
-	json.first_clear.name = fc_name;
-	json.first_clear.user_url = fc_url;
-	json.first_clear.user_img_url = fc_img_url;
-	if(json.first_clear.name === ''){
-		json.first_clear = null;
-	}
+	json.first_clearer = null;
+	let fc_name = $('.first-user > .body > .user-wrapper > .user-info > .name').html();
 
-	//recent players
-	$('.played-body > ul > li').each((i, el) => {
-		var obj = {};
-		var _$ = cheerio.load(el, {decodeEntities: false});
-		obj.user_name = _$('.user-wrapper > .user-info > .name').html();
-		var rp_url = _$('.user-wrapper > .mii-wrapper > .link').attr('href');
-		obj.user_url = profileURL + rp_url;
-		obj.user_img_url = _$('.user-wrapper > .mii-wrapper > .link > img').attr('src');
-		users[i] = obj;
-	});
-	json.recent_players = users;
-	if(json.recent_players.length === 0){
-		json.recent_players = null;
-	}
+	if (fc_name)
+		json.first_clearer = {
+			name: fc_name,
+			url: bookmarkURL + $('.first-user > .body > .user-wrapper > .mii-wrapper > .link').attr('href'),
+			avatar: $('.first-user > .body > .user-wrapper > .mii-wrapper > .link > img').attr('src')
+		}
 
-	//cleared by
-	users = [];
-	$('.cleared-body > ul > li').each((i, el) => {
-		var obj = {};
-		var _$ = cheerio.load(el, {decodeEntities: false});
-		obj.user_name = _$('.user-wrapper > .user-info > .name').html();
-		var rp_url = _$('.user-wrapper > .mii-wrapper > .link').attr('href');
-		obj.user_url = profileURL + rp_url;
-		obj.user_img_url = _$('.user-wrapper > .mii-wrapper > .link > img').attr('src');
-		users[i] = obj;
-	});
-	json.cleared_by = users;
-	if(json.cleared_by.length === 0){
-		json.cleared_by = null;
-	}
-
-	//starred by
-	users = [];
-	$('.liked-body > ul > li').each((i, el) => {
-		var obj = {};
-		var _$ = cheerio.load(el, {decodeEntities: false});
-		obj.user_name = _$('.user-wrapper > .user-info > .name').html();
-		var rp_url = _$('.user-wrapper > .mii-wrapper > .link').attr('href');
-		obj.user_url = profileURL + rp_url;
-		obj.user_img_url = _$('.user-wrapper > .mii-wrapper > .link > img').attr('src');
-		users[i] = obj;
-	});
-	json.starred_by = users;
-	if(json.starred_by.length === 0){
-		json.starred_by = null;
-	}
+	json.recent_players = createUserElement($('.played-body > ul > li'))
+	json.cleared_by = createUserElement($('.cleared-body > ul > li'))
+	json.starred_by = createUserElement($('.liked-body > ul > li'))
 
 	return json;
 }

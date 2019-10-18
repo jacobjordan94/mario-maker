@@ -15,10 +15,9 @@ In order to use the Super Mario Maker Bookmark Website API, you will need to req
 
 To get a course's information, you will need to have the course-ID available. As a workaround, you can use [an SMM Level DB](http://smm-db.glitch.me/levels/) made by NightYoshi370 to search for courses via their name.
 
-Once you have the course ID, you can then get the information by simply entering it as the first parameter to the variable you assigned above. Callbacks are also supported, the first argument being an error and the second argument being the level information. Of course, callbacks aren't mandatory, and simply requiring the course ID is enough.
+Once you have the course ID, you can then get the information by simply entering it as the first parameter to the variable you assigned above. Callbacks are also supported, the first argument being an error and the second argument being the level information. Of course, callbacks aren't mandatory and will return a promise if you do not provide one.
 
-
-## Example
+### Example
 
 ```js
 // Without callback
@@ -80,5 +79,6 @@ The user object consists of the name, url and avatar (and their keys respectivel
 
 ## Credits
 
-- **Samplasion** - Developer of the Super Mario Maker Bookmark Website API
-- **NightYoshi370** - Making callbacks optional, creating this ReadME
+- **jacobjordan94** - Original developer
+- **Samplasion** - Making it function based, maintainer of the Github Repository
+- **NightYoshi370** - Simplifying code, making callbacks optional, creating this ReadME

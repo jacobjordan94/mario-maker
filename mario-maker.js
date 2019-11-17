@@ -42,25 +42,41 @@ function createUserElement(object) {
 	return (userList.length ? userList : null);
 }
 
+function typography(object, parser, replacements = {}) {
+	let array = [];
+
+	if (Array.isArray(object))
+		object = parser(object.map(entry => '.' + entry).join(' > ') + ' > .typography');
+	else if (typeof object == 'string')
+		object = parser('.' + object + ' > .typography')
+
+	let class;
+	let key;
+	object.each((i, el) => {
+		class = parser(el).attr('class');
+		class = class.replace('typography typography-', '');
+
+		for (key of Object.keys(replacements)) {
+			class = class.replace(key, replacements[key])
+		}
+
+		array[i] = class;
+	})
+
+	return array;
+}
+
 function makeJSON(body) {
 	let $ = cheerio.load(body, {decodeEntities: false});
 	let json = {};
 	// var self = this;
 
+	json.difficulty = null;
 	if ($('.rank.nonprize') && $('.rank.nonprize')['0'] && $('.rank.nonprize')['0'].next && $('.rank.nonprize')['0'].next.data)
 		json.difficulty = $('.rank.nonprize')['0'].next.data.toLowerCase();
-	else
-		json.difficulty = null;
 
 	//Clear Rate
-	let typ = [];
-	$('.clear-rate > .typography').each((i, el) => {
-		var cls = $(el).attr('class');
-		cls = cls.replace('typography typography-', '');
-		cls = cls.replace('second', '.');
-
-		typ[i] = cls;
-	});
+	let typ = typography('clear-rate', $, {second: '.'});
 	typ.pop();
 	json.clear_rate = Number(typ.join(''));
 
@@ -79,68 +95,30 @@ function makeJSON(body) {
 	}
 
 	// Game style
-	$('.gameskin.bg-image').each((i, el) => {
-		json.gameStyle = el.attribs.class.replace('gameskin bg-image common_gs_', '')
-	})
+	$('.gameskin.bg-image').each((i, el) => json.gameStyle = el.attribs.class.replace('gameskin bg-image common_gs_', ''))
 
 	//Stars
-	typ = [];
-	$('.liked-count > .typography').each((i, el) => {
-		var cls = $(el).attr('class');
-		cls = cls.replace('typography typography-', '');
-		typ[i] = cls;
-	});
-	json.stars = Number(typ.join(''));
-
-	//Unique users
-	typ = [];
-	$('.played-count > .typography').each((i, el) => {
-		var cls = $(el).attr('class');
-		cls = cls.replace('typography typography-', '');
-		typ[i] = cls;
-	});
-	json.unique_users = Number(typ.join(''));
-
-	//number of shares
-	typ = [];
-	$('.shared-count > .typography').each((i, el) => {
-		var cls = $(el).attr('class');
-		cls = cls.replace('typography typography-', '');
-		typ[i] = cls;
-	});
-	json.shares = Number(typ.join(''));
+	json.stars = Number(typography('liked-count', $).join(''));
+	json.unique_users = Number(typography('played-count', $).join(''));
+	json.shares = Number(typography('shared-count', $).join(''));
 
 	//clears and attempts
-	$('.tried-count > .typography').each((i, el) => {
-		var cls = $(el).attr('class');
-		cls = cls.replace('typography typography-', '');
-		typ[i] = cls;
-	});
-	var x = typ.join('');
-	json.clears = Number(x.split('slash')[0]);
-	json.attempts = Number(x.split('slash')[1]);
+	let clearnattempt = typography('tried-count', $).join('');
+	json.clears = Number(clearnattempt.split('slash')[0]);
+	json.attempts = Number(clearnattempt.split('slash')[1]);
 
 	//tag
-	var tag = $('.course-meta-info > .course-tag').html();
-	tag = tag == '---' ? null : tag;
-	json.tag = tag;
+	let tag = $('.course-meta-info > .course-tag').html();
+	json.tag = tag == '---' ? null : tag;
 
 	//world record
 	json.world_record = null;
-	typ = [];
-
-	$('.fastest-time-wrapper > .clear-time > .typography').each((i, el) =>{
-		var cls = $(el).attr('class');
-		cls = cls.replace('typography typography-', '');
-		cls = cls.replace('minute', ':');
-		cls = cls.replace('second', '.');
-		typ[i] = cls;
-	});
+	let world_record_time = typography('tried-count', $, {minute: ':', second: '.'})
 
 	let worldRecord = $('.fastest-time-wrapper > .user-wrapper > .user-info > .name').html()
 	if (worldRecord)
 		json.world_record = {
-			time: typ.join(''),
+			time: world_record_time.join(''),
 			user: {
 				name: worldRecord,
 				url: bookmarkURL + $('.fastest-time-wrapper > .user-wrapper > .mii-wrapper > .link').attr('href'),

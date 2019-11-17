@@ -1,14 +1,14 @@
 {
-  "name": "mario-maker",
-  "version": "1.0.4",
+  "name": "super-maker-api",
+  "version": "3.0.0",
   "description": "An API for the Super Mario Maker Bookmark website",
   "main": "mario-maker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "exit"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jacobjordan94/mario-maker.git"
+    "url": "git+https://github.com/Samplasion/mario-maker.git"
   },
   "keywords": [
     "super",
@@ -20,10 +20,10 @@
     "bookmark",
     "nintendo"
   ],
-  "author": "@JacobAJordan_",
+  "author": "@Samplasion",
   "license": "WTFPL",
   "bugs": {
-    "url": "https://github.com/jacobjordan94/mario-maker/issues"
+    "url": "https://github.com/Samplasion/mario-maker/issues"
   },
   "dependencies": {
     "request": "latest",

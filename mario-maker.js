@@ -19,11 +19,9 @@
  */
 
 const request = require('request');
+const promiseRequest = require('util').promisify(request);
+
 const cheerio = require('cheerio');
-
-const { promisify } = require("util");
-const promiseRequest = promisify(request);
-
 const bookmarkURL = 'https://supermariomakerbookmark.nintendo.net';
 
 function createUserElement(object) {
@@ -156,11 +154,15 @@ module.exports = (id, callback=null) => {
 			}
 		});
 	} else {
-		let { body, statusCode, responce } = promiseRequest(bookmarkURL + '/courses/' + id);
-		if (!responce || statusCode !== 200) return 'Invalid response code';
+		try {
+			let { body, statusCode, responce } = promiseRequest(bookmarkURL + '/courses/' + id);
+			if (!responce || statusCode !== 200) return Promise.reject(new Error('Invalid response code'));
 
-		let json = makeJSON(body)
-		json.response = response
-		return json;
+			let json = makeJSON(body)
+			json.response = response
+			return json;
+		} catch (e) {
+			Promise.reject(new Error('Error getting site information', e));
+		}
 	}
 }
